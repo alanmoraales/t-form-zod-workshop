@@ -6,7 +6,7 @@ import SubmitButton from "./SubmitButton";
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
   createFormHookContexts();
 
-const { useAppForm } = createFormHook({
+const { useAppForm, withForm } = createFormHook({
   fieldContext,
   formContext,
   // We'll learn more about these options later
@@ -18,4 +18,5 @@ const { useAppForm } = createFormHook({
   },
 });
 
+export { withForm };
 export default useAppForm;
