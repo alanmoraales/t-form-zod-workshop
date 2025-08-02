@@ -11,11 +11,7 @@ export default function SubmitButton({ children }: SubmitButtonProps) {
   return (
     <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
       {([canSubmit, isSubmitting]) => (
-        <Button
-          type="submit"
-          disabled={!canSubmit || isSubmitting}
-          className="w-full"
-        >
+        <Button type="submit" disabled={!canSubmit || isSubmitting}>
           {children}
         </Button>
       )}
