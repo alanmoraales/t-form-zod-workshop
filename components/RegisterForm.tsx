@@ -38,7 +38,7 @@ export function RegisterForm() {
     validators: {
       onSubmit: registerSchema,
     },
-    onSubmit: async ({ value }: { value: z.infer<typeof registerSchema> }) => {
+    onSubmit: async ({ value }) => {
       console.log(value);
     },
   });
