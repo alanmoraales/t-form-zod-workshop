@@ -36,7 +36,7 @@ export function RegisterForm() {
       confirmPassword: "",
     },
     validators: {
-      onChange: registerSchema,
+      onSubmit: registerSchema,
     },
     onSubmit: async ({ value }: { value: z.infer<typeof registerSchema> }) => {
       console.log(value);
@@ -59,7 +59,10 @@ export function RegisterForm() {
           }}
           className="space-y-4"
         >
-          <form.AppField name="fullName">
+          <form.AppField
+            name="fullName"
+            validators={{ onChange: registerSchema.shape.fullName }}
+          >
             {(field) => (
               <field.TextInput
                 label="Nombre Completo"
@@ -68,7 +71,10 @@ export function RegisterForm() {
             )}
           </form.AppField>
 
-          <form.AppField name="email">
+          <form.AppField
+            name="email"
+            validators={{ onChange: registerSchema.shape.email }}
+          >
             {(field) => (
               <field.TextInput
                 label="Email"
@@ -78,7 +84,10 @@ export function RegisterForm() {
             )}
           </form.AppField>
 
-          <form.AppField name="password">
+          <form.AppField
+            name="password"
+            validators={{ onChange: registerSchema.shape.password }}
+          >
             {(field) => (
               <field.TextInput
                 label="Contraseña"
@@ -88,7 +97,10 @@ export function RegisterForm() {
             )}
           </form.AppField>
 
-          <form.AppField name="confirmPassword">
+          <form.AppField
+            name="confirmPassword"
+            validators={{ onChange: registerSchema.shape.confirmPassword }}
+          >
             {(field) => (
               <field.TextInput
                 label="Confirmar Contraseña"
