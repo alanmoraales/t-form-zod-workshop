@@ -1,11 +1,8 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import useAppForm from "./forms/useAppForm";
 
 const registerSchema = z
   .object({
@@ -31,7 +28,7 @@ const registerSchema = z
   });
 
 export function RegisterForm() {
-  const form = useForm({
+  const form = useAppForm({
     defaultValues: {
       fullName: "",
       email: "",
@@ -41,7 +38,7 @@ export function RegisterForm() {
     validators: {
       onChange: registerSchema,
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: z.infer<typeof registerSchema> }) => {
       console.log(value);
     },
   });
@@ -62,103 +59,48 @@ export function RegisterForm() {
           }}
           className="space-y-4"
         >
-          <form.Field name="fullName">
+          <form.AppField name="fullName">
             {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Nombre Completo</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="Ingresa tu nombre completo"
-                />
-                {field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive">
-                    {field.state.meta.errors[0]?.message}
-                  </p>
-                )}
-              </div>
+              <field.TextInput
+                label="Nombre Completo"
+                placeholder="Ingresa tu nombre completo"
+              />
             )}
-          </form.Field>
+          </form.AppField>
 
-          <form.Field name="email">
+          <form.AppField name="email">
             {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="tu@email.com"
-                />
-                {field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive">
-                    {field.state.meta.errors[0]?.message}
-                  </p>
-                )}
-              </div>
+              <field.TextInput
+                label="Email"
+                type="email"
+                placeholder="tu@email.com"
+              />
             )}
-          </form.Field>
+          </form.AppField>
 
-          <form.Field name="password">
+          <form.AppField name="password">
             {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
-                />
-                {field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive">
-                    {field.state.meta.errors[0]?.message}
-                  </p>
-                )}
-              </div>
+              <field.TextInput
+                label="Contraseña"
+                type="password"
+                placeholder="Mínimo 6 caracteres"
+              />
             )}
-          </form.Field>
+          </form.AppField>
 
-          <form.Field name="confirmPassword">
+          <form.AppField name="confirmPassword">
             {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="Confirma tu contraseña"
-                />
-                {field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive">
-                    {field.state.meta.errors[0]?.message}
-                  </p>
-                )}
-              </div>
+              <field.TextInput
+                label="Confirmar Contraseña"
+                type="password"
+                placeholder="Confirma tu contraseña"
+              />
             )}
-          </form.Field>
+          </form.AppField>
 
-          <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-          >
-            {([canSubmit, isSubmitting]) => (
-              <Button
-                type="submit"
-                disabled={!canSubmit || isSubmitting}
-                className="w-full"
-              >
-                {isSubmitting ? "Registrando..." : "Registrar Usuario"}
-              </Button>
-            )}
-          </form.Subscribe>
+          <form.AppForm>
+            <form.SubmitButton>Registrar Usuario</form.SubmitButton>
+          </form.AppForm>
         </form>
       </CardContent>
     </Card>
