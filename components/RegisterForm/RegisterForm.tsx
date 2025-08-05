@@ -2,81 +2,52 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useAppForm from "../forms/useAppForm";
-import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-import { defaultValues, registerSchema } from "./registerFormSchemas";
-import { BasicInfoSection } from "./BasicInfoSection";
-import { MainAddressSection } from "./MainAddressSection";
-import { SubscriptionSection } from "./SubscriptionSection";
-import { TabsSection } from "./TabsSection";
+import z from "zod";
+
+export const registerSchema = z
+  .object({
+    fullName: z
+      .string()
+      .min(2, "El nombre debe tener al menos 2 caracteres")
+      .max(50, "El nombre no puede exceder 50 caracteres"),
+    email: z.email("Debe ser un email válido").min(1, "El email es requerido"),
+    password: z
+      .string()
+      .min(6, "La contraseña debe tener al menos 6 caracteres")
+      .max(100, "La contraseña no puede exceder 100 caracteres"),
+    confirmPassword: z.string(),
+  })
+  .superRefine((data, ctx) => {
+    console.log(data);
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Las contraseñas no coinciden",
+        path: ["confirmPassword"],
+      });
+    }
+  });
 
 export function RegisterForm() {
-  const [currentTab, setCurrentTab] = useState<
-    "basicInfo" | "mainAddress" | "subscription"
-  >("basicInfo");
+  const [currentTab, setCurrentTab] = useState<"basicInfo" | "subscription">(
+    "basicInfo"
+  );
   const form = useAppForm({
-    defaultValues,
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
     validators: {
       onSubmit: registerSchema,
     },
     onSubmit: async ({ value }) => {
-      const parsedValue = registerSchema.safeParse(value);
-      console.log(parsedValue);
+      console.log(value);
     },
   });
-
-  const onSubmitBasicInfo = async () => {
-    const fullNameValidationResult = await form.validateField(
-      "fullName",
-      "submit"
-    );
-    const emailValidationResult = await form.validateField("email", "submit");
-    const passwordValidationResult = await form.validateField(
-      "password",
-      "submit"
-    );
-    const confirmPasswordValidationResult = await form.validateField(
-      "confirmPassword",
-      "submit"
-    );
-    const basicInfoValidationResult = [
-      ...fullNameValidationResult,
-      ...emailValidationResult,
-      ...passwordValidationResult,
-      ...confirmPasswordValidationResult,
-    ];
-    if (basicInfoValidationResult.length === 0) {
-      setCurrentTab("mainAddress");
-    }
-  };
-
-  const onSubmitMainAddress = async () => {
-    const AddressValidationResult = await form.validateField(
-      "mainAddress.address",
-      "submit"
-    );
-    const cityValidationResult = await form.validateField(
-      "mainAddress.city",
-      "submit"
-    );
-    const stateValidationResult = await form.validateField(
-      "mainAddress.state",
-      "submit"
-    );
-    const zipCodeValidationResult = await form.validateField(
-      "mainAddress.zipCode",
-      "submit"
-    );
-    const mainAddressValidationResult = [
-      ...AddressValidationResult,
-      ...cityValidationResult,
-      ...stateValidationResult,
-      ...zipCodeValidationResult,
-    ];
-    if (mainAddressValidationResult.length === 0) {
-      setCurrentTab("subscription");
-    }
-  };
 
   return (
     <form
@@ -97,28 +68,75 @@ export function RegisterForm() {
           <Tabs
             value={currentTab}
             onValueChange={(value) =>
-              setCurrentTab(value as "basicInfo" | "mainAddress")
+              setCurrentTab(value as "basicInfo" | "subscription")
             }
           >
             <TabsList>
-              <TabsSection form={form} />
+              <TabsTrigger value="basicInfo">Información Básica</TabsTrigger>
+              <TabsTrigger value="subscription">Suscripción</TabsTrigger>
             </TabsList>
             <TabsContent value="basicInfo" className="space-y-4 pt-4">
-              <BasicInfoSection
-                form={form}
-                onSubmitBasicInfo={onSubmitBasicInfo}
-              />
-            </TabsContent>
-            <TabsContent value="mainAddress" className="space-y-4 pt-4">
-              <MainAddressSection
-                form={form}
-                onSubmitMainAddress={onSubmitMainAddress}
-              />
+              <form.AppField
+                name="fullName"
+                validators={{ onChange: registerSchema.shape.fullName }}
+              >
+                {(field) => (
+                  <field.TextInput
+                    label="Nombre Completo"
+                    placeholder="Ingresa tu nombre completo"
+                  />
+                )}
+              </form.AppField>
+              <form.AppField
+                name="email"
+                validators={{ onChange: registerSchema.shape.email }}
+              >
+                {(field) => (
+                  <field.TextInput
+                    label="Email"
+                    type="email"
+                    placeholder="tu@email.com"
+                  />
+                )}
+              </form.AppField>
+
+              <form.AppField
+                name="password"
+                validators={{ onChange: registerSchema.shape.password }}
+              >
+                {(field) => (
+                  <field.TextInput
+                    label="Contraseña"
+                    type="password"
+                    placeholder="Mínimo 6 caracteres"
+                  />
+                )}
+              </form.AppField>
+
+              <form.AppField
+                name="confirmPassword"
+                validators={{
+                  onChange: registerSchema.shape.confirmPassword,
+                }}
+              >
+                {(field) => (
+                  <field.TextInput
+                    label="Confirmar Contraseña"
+                    type="password"
+                    placeholder="Confirma tu contraseña"
+                  />
+                )}
+              </form.AppField>
             </TabsContent>
             <TabsContent value="subscription" className="space-y-6 pt-4">
-              <SubscriptionSection form={form} />
+              {/* Subscription section */}
             </TabsContent>
           </Tabs>
+          <div className="flex justify-end pt-4">
+            <form.AppForm>
+              <form.SubmitButton>Registrar Usuario</form.SubmitButton>
+            </form.AppForm>
+          </div>
         </CardContent>
       </Card>
     </form>
